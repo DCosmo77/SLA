@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flashcard Vocabulary</title>
+<style>
+:root{--bg:#f6f5f2;--surface:#fff;--ink:#1d1d1f;--muted:#6b6b70;--line:#e2e0da;--accent:#2f6fed;--accent-ink:#fff;--ph:#919191;--danger:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16171a;--surface:#202226;--ink:#f1f1f3;--muted:#9a9aa2;--line:#33353b;--accent:#6b9bff;--accent-ink:#0b1020;--ph:#4a4c53;--danger:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16171a;--surface:#202226;--ink:#f1f1f3;--muted:#9a9aa2;--line:#33353b;--accent:#6b9bff;--accent-ink:#0b1020;--ph:#4a4c53;--danger:#ff7b6b;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+a{color:var(--accent)}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 20px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-size:14px}
+/* Kartu */
+.card-page{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:48px;align-items:start}
+.pic{aspect-ratio:4/5;background:var(--ph);border-radius:16px;overflow:hidden;display:grid;place-items:center;color:#fff;font-size:clamp(80px,14vw,140px)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.vocab{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;font-size:clamp(26px,5vw,34px);font-weight:700}
+.right{padding-top:clamp(0px,8vw,120px);display:flex;flex-direction:column;align-items:center;gap:16px}
+.audio{width:100%;display:flex;gap:12px;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+button{font:inherit;cursor:pointer}
+.play{display:flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:12px 24px;font-weight:700;font-size:18px}
+.slow{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:11px 16px}
+.bars{display:flex;gap:3px;align-items:center;height:22px}
+.bars i{width:4px;height:6px;border-radius:2px;background:currentColor;display:block}
+.on .bars i{animation:b .7s ease-in-out infinite}
+.on .bars i:nth-child(2){animation-delay:.15s}.on .bars i:nth-child(3){animation-delay:.3s}.on .bars i:nth-child(4){animation-delay:.45s}
+@keyframes b{0%,100%{height:6px}50%{height:22px}}
+.spell{width:min(100%,420px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.spell small{display:block;color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.letters{font-size:20px;letter-spacing:.15em;font-weight:600;word-break:break-word}
+.ipa{display:block;font:500 26px/1.3 "Noto Sans","Segoe UI",system-ui,sans-serif;margin-top:6px;color:var(--accent)}
+.meaning{color:var(--muted);text-align:center}
+/* Home */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:16px}
+.tile{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tile .pic{border-radius:0;font-size:56px}.tile b{display:block;padding:10px;text-align:center}
+/* Admin */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input[type=text],input[type=url]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 16px;font-weight:600}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.del{background:transparent;color:var(--danger);border:1px solid var(--line)}
+.item{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.item:first-of-type{border-top:0}
+.thumb{width:44px;height:55px;border-radius:8px;background:var(--ph);overflow:hidden;display:grid;place-items:center;font-size:24px;color:#fff;flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.item .meta{flex:1;min-width:120px}.item .meta small{color:var(--muted);display:block}
+#qrbox{text-align:center}#qrbox img,#qrbox canvas{max-width:100%;background:#fff;padding:10px;border-radius:8px}
+#qrbox code{display:block;word-break:break-all;font-size:12px;color:var(--muted);margin:8px 0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:5}
+@media (max-width:720px){.card-page{grid-template-columns:1fr;gap:20px}.pic{max-width:360px;margin:0 auto}.vocab{max-width:360px;margin-left:auto;margin-right:auto}.right{padding-top:0}.wrap{padding:16px 16px 32px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script id="data" type="application/json">{"base":"","cards":[{"id":"apple","word":"apple","ipa":"ˈæp.əl","meaning":"apel","emoji":"🍎","img":""},{"id":"banana","word":"banana","ipa":"bəˈnæn.ə","meaning":"pisang","emoji":"🍌","img":""},{"id":"cat","word":"cat","ipa":"kæt","meaning":"kucing","emoji":"🐱","img":""}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const state = JSON.parse(document.getElementById('data').textContent);
+const app = document.getElementById('app');
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug = w => w.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const baseUrl = () => (state.base || location.href.split('#')[0]).replace(/#.*$/, '');
+const cardUrl = id => baseUrl() + '#' + id;
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}
+function pic(c){return c.img?`<img src="${esc(c.img)}" alt="${esc(c.word)}">`:(c.emoji?esc(c.emoji):'Gambar')}
+
+/* ---------- Routing: #kata → kartu, kosong → daftar, #admin → pengelola ---------- */
+function route(){
+  speechSynthesis && speechSynthesis.cancel && speechSynthesis.cancel();
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h === 'admin') return admin();
+  if (!h) return home();
+  const c = state.cards.find(x => x.id === h);
+  c ? cardView(c) : notFound(h);
+}
+addEventListener('hashchange', route);
+
+function home(){
+  app.innerHTML = `<div class="wrap"><div class="top"><b>Flashcard Vocabulary</b><a href="#admin">Kelola</a></div>
+  <p>Scan QR code pada flashcard, atau pilih kartu di bawah.</p>
+  <div class="grid">${state.cards.map(c=>`<a class="tile" href="#${esc(c.id)}"><div class="pic">${pic(c)}</div><b>${esc(c.word)}</b></a>`).join('')}</div></div>`;
+}
+function notFound(h){
+  app.innerHTML = `<div class="wrap"><div class="top"><a href="#">← Semua kartu</a></div><h2>Kartu “${esc(h)}” tidak ditemukan</h2><p>Pastikan QR code benar atau pilih kartu dari daftar.</p></div>`;
+}
+
+/* ---------- Tampilan kartu ---------- */
+function speak(text, rate, btn){
+  if (!('speechSynthesis' in window)) return toast('Browser ini tidak mendukung audio.');
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = rate;
+  const vs = speechSynthesis.getVoices();
+  const v = vs.find(v => /^en[-_]US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang));
+  if (v) u.voice = v;
+  u.onstart = () => btn.classList.add('on');
+  u.onend = u.onerror = () => btn.classList.remove('on');
+  speechSynthesis.speak(u);
+}
+function cardView(c){
+  const letters = c.word.toUpperCase().split('').map(ch => ch === ' ' ? '␣' : ch).join(' · ');
+  app.innerHTML = `<div class="wrap"><div class="top"><a href="#">← Semua kartu</a><a href="#admin">Kelola</a></div>
+  <main class="card-page">
+    <section><div class="pic">${pic(c)}</div><div class="vocab">${esc(c.word)}</div></section>
+    <section class="right">
+      <div class="audio"><button class="play" id="p"><span class="bars"><i></i><i></i><i></i><i></i></span>Putar Audio</button><button class="slow" id="s" title="Pelan">🐢 Pelan</button></div>
+      <div class="spell"><small>Ejaan normal + IPA</small><span class="letters">${esc(letters)}</span>${c.ipa?`<span class="ipa">/${esc(c.ipa)}/</span>`:''}</div>
+      ${c.meaning?`<div class="meaning">${esc(c.meaning)}</div>`:''}
+    </section></main></div>`;
+  $('#p').onclick = e => speak(c.word, 0.9, e.currentTarget);
+  $('#s').onclick = e => speak(c.word, 0.5, e.currentTarget);
+}
+
+/* ---------- Penyimpanan: mempublikasikan ulang halaman dengan data terbaru ---------- */
+async function getArt(){ try { return window.claude ? await claude.use('artifact') : null } catch { return null } }
+async function save(){
+  const art = await getArt();
+  if (!art) return toast('Hanya pemilik halaman yang bisa menyimpan perubahan.');
+  const clone = document.documentElement.cloneNode(true);
+  $('#app', clone).innerHTML = '';
+  $('#data', clone).textContent = JSON.stringify(state).replace(/</g, '\\u003c');
+  try { await art.publish('<!DOCTYPE html>\n' + clone.outerHTML); }
+  catch (e) { toast('Gagal menyimpan: ' + (e.message || e.code || 'coba lagi')); }
+}
+function resize(file){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const s=Math.min(1,640/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.82))};im.onerror=rej;im.src=u})}
+
+/* ---------- Pengelola: tambah/ubah/hapus kosakata + QR ---------- */
+let editId = null;
+function admin(){
+  const e = state.cards.find(c => c.id === editId) || {};
+  app.innerHTML = `<div class="wrap"><div class="top"><a href="#">← Kembali</a><b>Kelola Vocabulary</b></div>
+  <div class="panel"><b>${editId ? 'Ubah kartu' : 'Tambah kosakata baru'}</b>
+    <label>Kata (English)</label><input type="text" id="w" value="${esc(e.word)}" placeholder="mis. umbrella">
+    <label>Kode QR / ID (huruf kecil, angka, tanda minus)</label><input type="text" id="i" value="${esc(e.id)}" placeholder="otomatis dari kata">
+    <label>IPA (tanpa garis miring)</label><input type="text" id="ipa" value="${esc(e.ipa)}" placeholder="ʌmˈbrel.ə">
+    <label>Arti dalam Bahasa Indonesia (opsional)</label><input type="text" id="m" value="${esc(e.meaning)}" placeholder="payung">
+    <label>Gambar ${editId ? '(kosongkan jika tidak diganti)' : ''}</label><input type="file" id="f" accept="image/*">
+    <div class="row"><button class="btn" id="ok">${editId ? 'Simpan perubahan' : 'Tambah & publikasikan'}</button>${editId ? '<button class="btn alt" id="no">Batal</button>' : ''}</div></div>
+  <div class="panel"><b>Daftar kartu (${state.cards.length})</b>
+    ${state.cards.map(c=>`<div class="item"><div class="thumb">${pic(c)}</div><div class="meta"><b>${esc(c.word)}</b><small>/${esc(c.ipa)}/ · #${esc(c.id)}</small></div>
+      <button class="btn alt" data-qr="${esc(c.id)}">QR</button><button class="btn alt" data-ed="${esc(c.id)}">Ubah</button><button class="btn del" data-del="${esc(c.id)}">Hapus</button></div>`).join('')}</div>
+  <div class="panel"><b>Link website untuk QR</b><label>Tempel link publik halaman ini (setelah Anda klik Share → Copy link)</label>
+    <input type="url" id="b" value="${esc(state.base)}" placeholder="https://claude.ai/...">
+    <div class="row"><button class="btn alt" id="sb">Simpan link</button></div></div>
+  <div class="panel" id="qrbox" hidden></div></div>`;
+
+  $('#w').oninput = ev => { if (!editId) $('#i').value = slug(ev.target.value); };
+  if (editId) $('#no').onclick = () => { editId = null; admin(); };
+  $('#ok').onclick = async () => {
+    const word = $('#w').value.trim(), id = slug($('#i').value || word);
+    if (!word || !id) return toast('Kata wajib diisi.');
+    if (state.cards.some(c => c.id === id && c.id !== editId)) return toast('ID sudah dipakai kartu lain.');
+    let img = e.img || '';
+    const file = $('#f').files[0];
+    if (file) { try { img = await resize(file); } catch { return toast('Gambar tidak bisa dibaca.'); } }
+    const card = { id, word, ipa: $('#ipa').value.trim().replace(/^\/|\/$/g, ''), meaning: $('#m').value.trim(), img, emoji: e.emoji || '' };
+    const i = state.cards.findIndex(c => c.id === editId);
+    i >= 0 ? state.cards[i] = card : state.cards.push(card);
+    editId = null; await save(); admin();
+  };
+  $('#sb').onclick = async () => { state.base = $('#b').value.trim().replace(/#.*$/, ''); await save(); toast('Link disimpan.'); };
+  app.querySelectorAll('[data-ed]').forEach(b => b.onclick = () => { editId = b.dataset.ed; admin(); scrollTo(0, 0); });
+  app.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    const c = state.cards.find(x => x.id === b.dataset.del);
+    if (!confirm('Hapus kartu “' + c.word + '”?')) return;
+    state.cards = state.cards.filter(x => x !== c); await save(); admin();
+  });
+  app.querySelectorAll('[data-qr]').forEach(b => b.onclick = () => {
+    const url = cardUrl(b.dataset.qr), box = $('#qrbox');
+    box.hidden = false; box.innerHTML = `<b>QR untuk “${esc(b.dataset.qr)}”</b><div id="qr" style="margin:12px 0"></div><code>${esc(url)}</code><small>Klik kanan / tekan lama gambar untuk menyimpan, lalu cetak di flashcard.</small>`;
+    if (window.QRCode) {
+      new QRCode($('#qr'), { text: url, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
+    } else $('#qr').textContent = 'Library QR gagal dimuat.';
+    box.scrollIntoView({ behavior: 'smooth' });
+  });
+}
+route();
+</script>
+</body>
+</html>
